@@ -272,15 +272,15 @@ int main(int argc, char const *argv[]){
 		int stack[N+2];
 
 		// clear the board 
-		for(int i = 0; i < N; i++){
-			for (int j = 0; j < N; j++){
+		for(int i = 0; i < N+2; i++){
+			for (int j = 0; j < N+2; j++){
 				board[i][j] = 0;
 			}
 		}
 
 		// setup the board based on file
-		for(int i = 0; i < N; i++){
-			for (int j = 0; j < N-1; j++){
+		for(int i = 2; i < N+2; i++){
+			for (int j = 2; j < N+1; j++){
 				fscanf(fp, "%d ", &board[i][j]);
 				printf("%d ", board[i][j]);
 			}
