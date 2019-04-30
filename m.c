@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int TRUE = 1;
 int FALSE = 0;
@@ -17,6 +18,7 @@ void printStack(int N, int stack[]){
 	for(int i = 0; i < N; i++){
 		printf("%d ", stack[i]);
 	}
+
 	printf("\n");
 }
 
@@ -249,90 +251,59 @@ void nchancellors(int N, int board[][N+2], int stack[], int cands[][N+2], int iS
 }
 
 int main(int argc, char const *argv[]){
+	char filename[10] = "input.in";
+	FILE *fp;
+	fp = fopen(filename, "r");
+
 	int N;
-	printf("Enter size of board: \n");
-	scanf("%d", &N);
+	int puzzlenum;
 
-	int board[N+2][N+2];
+	// scan for number of puzzles to read
+	fscanf(fp, "%d\n", &puzzlenum);
 
-	for(int i = 0 ; i < N+2; i++){  // init
-		for(int j = 0 ; j < N+2; j++){
-			if(i == 0 || j == 0 || i == N+1 || j == N+1){
-				board[i][j] = 9;
-			}
-			else{
-				board[i][j] = 0;	
+	// loop through each puzzle config
+	for (int p = 0; p < puzzlenum; p++){
+
+		// get the size of the board
+		fscanf(fp, "%d\n", &N);
+		
+		// init the board and stack with size N+2
+		int board[N+2][N+2];
+		int stack[N+2];
+
+		// clear the board 
+		for(int i = 0; i < N; i++){
+			for (int j = 0; j < N; j++){
+				board[i][j] = 0;
 			}
 		}
+
+		// setup the board based on file
+		for(int i = 0; i < N; i++){
+			for (int j = 0; j < N-1; j++){
+				fscanf(fp, "%d ", &board[i][j]);
+				printf("%d ", board[i][j]);
+			}
+			fscanf(fp, "%d\n", &board[i][N]);
+			printf("%d\n", board[i][N]);
+		}
+
+		// init stack
+		for(int k = 0; k < N+2; k++){
+			stack[k] = 0; 
+		}
+
+		int cands[N+2][N+2];
+		initCands(N+2, cands);
+
+		int iS = 2;
+		int initials[2][2] = { {2,3}, {4,1} };
+
+		printf("size: %d\n", N);
+		printBoard(N, board);
+		printf("\n");
+
+		// nchancellors(N, board, stack, cands, iS, initials);
 	}
-
-	int stack[N+2];
-
-	for(int i = 0; i < N+2; i++){ // init stack
-		stack[i] = 0; 
-	}
-
-	int cands[N+2][N+2];
-	initCands(N+2, cands);
-
-	// if has initial chancy placed
-	// 4x4
-	// board[1][1] = 1;
-	// cands[1][1] = 1;
-	// stack[1] = 1;
-
-	// board[2][4] = 1;
-	// cands[2][1] = 4;
-	// stack[2]= 1;
-
-	// 4x4
-	// board[1][4] = 1;
-	// cands[1][1] = 4;
-	// stack[1] = 1;
-
-	// board[3][2] = 1;
-	// cands[3][1] = 2;
-	// stack[3]= 1;
-
-	//8x8
-	// board[2][7] = 1;
-	// cands[2][1] = 7;
-	// stack[2] = 1;
-
-	// board[4][5] = 1;
-	// cands[4][1] = 5;
-	// stack[4]= 1;
-
-	// board[5][2] = 1;
-	// cands[5][1] = 2;
-	// stack[5] = 1;
-
-	// board[7][4] = 1;
-	// cands[7][1] = 4;
-	// stack[7]= 1;
-
-	//8x8
-	board[2][3] = 1;
-	// cands[2][1] = 3;
-	// stack[2] = 1;
-
-	board[4][1] = 1;
-	// cands[4][1] = 1;
-	// stack[4]= 1;
-
-	// 5x5
-	// board[2][1] = 1;
-	// cands[2][1] = 1;
-	// stack[2] = 1;
-
-	// board[3][2] = 1;
-	// cands[3][1] = 2;
-	// stack[3] = 1;
-
-	int iS = 2;
-	int initials[2][2] = { {2,3}, {4,1} };
-
-	// printBoard(size, board);
-	nchancellors(N, board, stack, cands, iS, initials);
-
+	fclose(fp);
 }
