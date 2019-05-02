@@ -37,20 +37,8 @@ void initCands(int N, int cands[][N]){
 	}	
 }
 
-int check(){
-
-}
-
-
-int pop(){
-
-}
-
-void push(){
-
-}
-
 int canPlace(int N, int board[][N], int sI, int col){
+	// printf("%d , %d \n", sI, col);
 	// row
 	for(int i = 1; i < N-1; i++){
 		if(board[sI][i] == 1){
@@ -60,7 +48,7 @@ int canPlace(int N, int board[][N], int sI, int col){
 	}
 
 	// col
-	for(int i = 1; i < N-1; i++){
+	for(int i = 1; i < N-1; i++){	
 		if(board[i][col] == 1){
 			// printf("y\n");
 			return FALSE;
@@ -69,7 +57,7 @@ int canPlace(int N, int board[][N], int sI, int col){
 
 
 	if(sI-2 > 0 && col-1 > 0 && board[sI-2][col-1] == 1){
-		// printf("b\n");
+		// printf("a\n");
 		return FALSE;		
 	}
 
@@ -79,70 +67,34 @@ int canPlace(int N, int board[][N], int sI, int col){
 	}
 
 	if(sI+2 < N-1 && col-1 > 0 && board[sI+2][col-1] == 1){
-		// printf("b\n");
+		// printf("c\n");
 		return FALSE;		
 	}
 
 	if(sI+2 < N-1 && col+1 > 0 && board[sI+2][col+1] == 1){
-		// printf("b\n");
+		// printf("d\n");
 		return FALSE;		
 	}
 
 	if(sI-1 > 0 && col-2 > 0 && board[sI-1][col-2] == 1){
-		// printf("b\n");
+		// printf("e\n");
 		return FALSE;		
 	}
 
 	if(sI-1 > 0 && col+2 < N-1 && board[sI-1][col+2] == 1){
-		// printf("b\n");
+		// printf("f\n");
 		return FALSE;		
 	}
 
 	if(sI+1 < N-1 && col-2 > 0 && board[sI+1][col-2] == 1){
-		// printf("b\n");
+		// printf("g\n");
 		return FALSE;		
 	}
 
 	if(sI+1 < N-1 && col+2 < N-1 && board[sI+1][col+2] == 1){
-		// printf("b\n");
+		// printf("h\n");
 		return FALSE;		
 	}
-
-	// 
-	// if(sI-2 > 0 && col+1 < N-1 && board[sI-2][col+1] == 1){
-	// 	// printf("b\n");
-	// 	return FALSE;		
-	// }
-
-	// if(sI-1 > 0 && col-2 > 0 && board[sI-1][col-2] == 1){
-	// 	// printf("c\n");
-	// 	return FALSE;
-	// }
-
-	// if(sI-1 > 0 && col+2 < N-1 && board[sI-1][col+2] == 1){
-	// 	// printf("b\n");
-	// 	return FALSE;		
-	// }
-
-	// if(sI+2 < N-1 && col-1 > 0 && board[sI+2][col-1] == 1){  // pahigang L
-	// 	// printf("d\n");
-	// 	return FALSE;
-	// }
-
-	// if(sI+2 < N-1 && col+1 < N-1 && board[sI+2][col+1] == 1){  
-	// 	// printf("d\n");
-	// 	return FALSE;
-	// }
-
-	// if(sI-1 > 0 && col-2 > 0 && board[sI-1][col-2] == 1){
-	// 	// printf("e\n");
-	// 	return FALSE;
-	// }
-
-	// if(sI-1 > 0 && col+2 < N-1 && board[sI-1][col+2] == 1){
-	// 	// printf("e\n");
-	// 	return FALSE;
-	// }
 
 	return TRUE;
 }
@@ -153,7 +105,6 @@ int isInitial(int sI, int iS, int initials[][2]){
 			return TRUE;
 		}
 	}
-
 	return FALSE;
 }
 
@@ -163,6 +114,24 @@ int searchInitial(int sI, int iS, int initials[][2]){
 			return initials[i][1];
 		}
 	}
+}
+
+int isInitialBoardValid(int N, int board[][N], int iS, int initials[][2]){
+	
+	// for(int i = 0; i < iS; i++){
+	// 	printf("%d %d\n", initials[iS]);
+	// }
+	for(int i = 0 ; i < iS; i++){
+		int row = initials[i][0];
+		int col = initials[i][1];
+		if(canPlace(N, board, row, col) == TRUE){
+			board[row][col] = 1;
+		}
+		else{
+			return FALSE;
+		}
+	}
+	return TRUE;
 }
 
 void nchancellors(int N, int board[][N+2], int stack[], int cands[][N+2], int iS, int initials[][2]){
@@ -205,27 +174,21 @@ void nchancellors(int N, int board[][N+2], int stack[], int cands[][N+2], int iS
 						cands[sI][stack[sI]] = col;					
 					}
 				}
-				printf("cands have been put in the arr\n");	
+				// printf("cands have been put in the arr\n");	
 			}
 			else{
-				// place the initial config of the current sI
 				stack[sI] = 1;
-				printf("cands col: %d\n", sI);
-				printf("initials\n");
-				for(int i = 0; i < iS; i++){
-					for(int j = 0; j < 2; j++){
-						printf("%d ", initials[i][j]); 
-					}
-					printf("\n");
-				}
+				// printf("cands col: %d\n", sI);
+				// printf("initials\n");
+
 				int col = searchInitial(sI, iS, initials);
 				cands[sI][stack[sI]] = col;
-				printf("col: %d\n", cands[sI][stack[sI]]);
-				printf("isInitial %d\n", sI);
+				// printf("col: %d\n", cands[sI][stack[sI]]);
+				// printf("isInitial %d\n", sI);
 			}
 		}	
 		else{ // pop
-			printf("time to pop\n");
+			// printf("time to pop\n");
 			sI--;
 			if(isInitial(sI, iS, initials) == TRUE){
 				sI--;
@@ -236,103 +199,88 @@ void nchancellors(int N, int board[][N+2], int stack[], int cands[][N+2], int iS
 			board[sI][cands[sI][stack[sI]]] = 0;
 			stack[sI]--;
 		}
-		printf("sI: %d\n", sI); 
-		printBoard(N+2, board);
-		printStack(N+2, stack);
-		printCands(N+2, cands);
+		// printf("sI: %d\n", sI); 
+		// printBoard(N+2, board);
+		// printStack(N+2, stack);
+		// printCands(N+2, cands);
 
-		if(stack[start] == 0 && solution == 0){
-			printf("No solutions");
-		}
+	}
+
+	if(stack[start] == 0 && solution == 0){
+		printf("No solutions");
 	}
 
 }
 
-int main(int argc, char const *argv[]){
-	int N;
-	printf("Enter size of board: \n");
-	scanf("%d", &N);
-
-	int board[N+2][N+2];
-
-	for(int i = 0 ; i < N+2; i++){  // init
-		for(int j = 0 ; j < N+2; j++){
-			if(i == 0 || j == 0 || i == N+1 || j == N+1){
+void initBoard(int N, int board[][N]){
+	for(int i = 0 ; i < N; i++){  // init
+		for(int j = 0 ; j < N; j++){
+			if(i == 0 || j == 0 || i == N-1 || j == N-1){
 				board[i][j] = 9;
 			}
 			else{
-				board[i][j] = 0;	
+				board[i][j] = 0;
 			}
 		}
 	}
+}
 
-	int stack[N+2];
-
+void initStack(int N, int stack[]){
 	for(int i = 0; i < N+2; i++){ // init stack
 		stack[i] = 0; 
 	}
-
-	int cands[N+2][N+2];
-	initCands(N+2, cands);
-
-	// if has initial chancy placed
-	// 4x4
-	// board[1][1] = 1;
-	// cands[1][1] = 1;
-	// stack[1] = 1;
-
-	// board[2][4] = 1;
-	// cands[2][1] = 4;
-	// stack[2]= 1;
-
-	// 4x4
-	// board[1][4] = 1;
-	// cands[1][1] = 4;
-	// stack[1] = 1;
-
-	// board[3][2] = 1;
-	// cands[3][1] = 2;
-	// stack[3]= 1;
-
-	//8x8
-	// board[2][7] = 1;
-	// cands[2][1] = 7;
-	// stack[2] = 1;
-
-	// board[4][5] = 1;
-	// cands[4][1] = 5;
-	// stack[4]= 1;
-
-	// board[5][2] = 1;
-	// cands[5][1] = 2;
-	// stack[5] = 1;
-
-	// board[7][4] = 1;
-	// cands[7][1] = 4;
-	// stack[7]= 1;
-
-	//8x8
-	board[2][3] = 1;
-	// cands[2][1] = 3;
-	// stack[2] = 1;
-
-	board[4][1] = 1;
-	// cands[4][1] = 1;
-	// stack[4]= 1;
-
-	// 5x5
-	// board[2][1] = 1;
-	// cands[2][1] = 1;
-	// stack[2] = 1;
-
-	// board[3][2] = 1;
-	// cands[3][1] = 2;
-	// stack[3] = 1;
-
-	int iS = 2;
-	int initials[2][2] = { {2,3}, {4,1} };
-
-	// printBoard(size, board);
-	nchancellors(N, board, stack, cands, iS, initials);
-
 }
+int main(int argc, char const *argv[]){
+
+	char filename[10] = "input.in";
+	FILE *fp;
+	fp = fopen(filename, "r");
+
+	int N;
+	int puzzlenum;
+
+	// scan for number of puzzles to read
+	fscanf(fp, "%d\n", &puzzlenum);
+
+	// loop through each puzzle config
+	for (int p = 0; p < puzzlenum; p++){
+
+		// get the size of the board
+		fscanf(fp, "%d\n", &N);
+
+		// init the board and stack with size N+2
+		int board[N+2][N+2];
+		int stack[N+2];
+		int cands[N+2][N+2];
+
+		initBoard(N+2, board);
+		initStack(N, stack);
+		initCands(N+2, cands);
+
+		int maxInitials = N*N;
+		int initials[maxInitials][2];
+		int iS = 0;
+		int val = 0;
+
+		// get the inital points
+		for(int i = 0; i < N; i++){
+			for (int j = 0; j < N; j++){
+				fscanf(fp, "%d ", &val); 
+				if(val == 1){
+					initials[iS][0] = i+1;   // row of initial
+					initials[iS][1] = j+1;   // col
+					iS++;
+				}
+			}
+		} 
+
+		if(isInitialBoardValid(N+2, board, iS, initials) == FALSE){
+			printf("Puzzle %d\n", p+1);  
+			printf("No solutions\n");
+			continue;
+		}
+		printf("Puzzle %d\n", p+1);  
+		nchancellors(N, board, stack, cands, iS, initials);
+	}
+}
+
