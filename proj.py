@@ -1,6 +1,9 @@
 from tkinter import filedialog
 from tkinter import *
 
+# n-chancellor's code is here
+from ncp import *
+
 class NChancellorsApp(Frame):
 
 	# indexes for showSolution method.
@@ -169,7 +172,7 @@ class NChancellorsApp(Frame):
 				board = [lst.pop(0) for i in range(size)]
 				variables = self.initVariables(size)
 				variables = self.setVariables(size, variables, board)
-				self.board.update({i:{'size':size, 'board':board, 'variables':variables, 'solutions':[]}})
+				self.board.update({i:{'size':size, 'board':board, 'variables':variables, 'solutions':[board]}})
 				# self.board_sizes.append(size)
 				# self.boards.append(board)
 
@@ -209,7 +212,7 @@ class NChancellorsApp(Frame):
 		# reset board dict
 		self.board = {}
 		# update board dict
-		self.board.update({0:{'size':size, 'board':board, 'variables':variables, 'solutions':[]}})
+		self.board.update({0:{'size':size, 'board':board, 'variables':variables, 'solutions':[board]}})
 
 		# insert list of lists of buttons here
 		self.row[1].pack(fill=X)
@@ -299,6 +302,10 @@ class NChancellorsApp(Frame):
 	def startWindow(self, to_forget=None, to_destroy=None):
 		self.clearWidgets(to_forget, to_destroy)
 
+		# reset indices
+		self.index_brd=0
+		self.index_sol=0
+
 		self.row[0].pack(fill=X)
 
 	# adjusts index_brd and index_sol by increments, with checks to not go out of bounds, and
@@ -323,28 +330,8 @@ class NChancellorsApp(Frame):
 	# so it should loop through each puzzle and solve them at once.
 	def solveNChancellorsProblem(self):
 		for b in self.board:
-			# to get the board state:
-			print(self.board[b]['board'])
+			solve(self.board[b])
 
-			# to get the solution list:
-			print(self.board[b]['solutions'])
-
-			# to create a list of the same size as board:
-			size = self.board[b]['size']
-			lst = [[0 for j in range(size)] for i in range(size)]
-			print(lst)
-
-			# to copy a list (py references only, you need this to create a new one)
-			lst2 = [row[:] for row in lst]
-
-			# to assign a value to a cell:
-			lst[0][0] = 1
-			lst2[size-1][size-1] = 1
-
-			# to add to the solutions:
-			self.board[b]['solutions'].append(lst)
-			self.board[b]['solutions'].append(lst2)
-			self.board[b]['solutions'].append(self.board[b]['board'])
 
 if __name__ == "__main__":
 	root=Tk()
