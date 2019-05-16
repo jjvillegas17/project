@@ -31,6 +31,9 @@ class NChancellorsApp(Frame):
 	# list of Frames() as groups that contain widgets
 	row = []
 
+	puzzlenum = 0
+	boardSizes = []
+
 	def __init__ (self, parent):
 		Frame.__init__(self, parent)
 
@@ -159,6 +162,7 @@ class NChancellorsApp(Frame):
 			# pop the number of puzzles from the list
 			num = int(lst.pop(0)[0])
 
+			self.puzzlenum = num
 			# loop through each board size and board tiles,
 			# pop the size, 
 			# pop the row tuples by size, and 
@@ -169,6 +173,7 @@ class NChancellorsApp(Frame):
 			self.board = {}
 			for i in range(num):
 				size = int(lst.pop(0)[0])
+				self.boardSizes.append(size)
 				board = [lst.pop(0) for i in range(size)]
 				variables = self.initVariables(size)
 				variables = self.setVariables(size, variables, board)
@@ -242,7 +247,8 @@ class NChancellorsApp(Frame):
 			# do n-chancellors problem here or 
 			# do it in a separate function
 			# but call it here
-			self.solveNChancellorsProblem()
+			self.solve() # main function that solves the n chancellors
+			# self.solveNChancellorsProblem()
 
 		self.clearWidgets(to_forget, to_destroy)
 
@@ -333,9 +339,213 @@ class NChancellorsApp(Frame):
 			solve(self.board[b])
 
 
+
+	def initBoard(self,N, board):
+		for i in range(N):
+			for j in range(N):
+				if(i == 0 or j == 0 or i == N-1 or j == N-1):
+					board[i][j] = 9;
+				else:
+					board[i][j] = 0;	
+
+	def printBoard(self, N, board):
+		for i in range(N):
+			for j in range(N):
+				print (board[i][j],  " ", end="")
+			print () 
+
+	def printStack(self, N, stack):
+		print("stack: ", end=" ");
+		for i in range(N):
+			print(stack[i], end= " ")
+		print()
+
+	def printCands(self, N, cands):
+		for i in range(N):
+			for j in range(N):
+				print(cands[i][j], end= " ")
+			print()
+
+	def initStack(self, N, stack):
+		for i in range(N+2):
+			stack[i] = 0 
+
+	def initCands(self, N, cands):
+		for i in range(N):
+			for j in range(N):
+				cands[i][j] = -1
+
+	def isInitialBoardValid(self, N, board, iS, initials):
+		for i in range(iS):
+			row = initials[i][0];
+			col = initials[i][1];
+			if(self.canPlace(N, board, row, col) == True):
+				board[row][col] = 1;
+			else:
+				return FALSE;
+		return TRUE;
+
+	def canPlace(self, N, board, sI, col):
+		i = 1
+		for i in range(N-1): # check row
+			if(board[sI][i] == 1):
+				return False
+
+		i = 1
+		for i in range(N-1): # check col
+			if(board[i][col] == 1):
+				return False;
+
+		if(sI-2 > 0 and col-1 > 0 and board[sI-2][col-1] == 1):
+			return False;		
+
+		if(sI-2 > 0 and col+1 < N-1 and board[sI-2][col+1] == 1):
+			return False;		
+
+		if(sI+2 < N-1 and col-1 > 0 and board[sI+2][col-1] == 1):
+			return False;		
+
+		if(sI+2 < N-1 and col+1 > 0 and board[sI+2][col+1] == 1):
+			return False;		
+
+		if(sI-1 > 0 and col-2 > 0 and board[sI-1][col-2] == 1):
+			return False;		
+
+		if(sI-1 > 0 and col+2 < N-1 and board[sI-1][col+2] == 1):
+			return False;		
+
+		if(sI+1 < N-1 and col-2 > 0 and board[sI+1][col-2] == 1):
+			return False;		
+
+		if(sI+1 < N-1 and col+2 < N-1 and board[sI+1][col+2] == 1):
+			return False;		
+
+		return True;
+
+	def isInitial(self, sI, iS, initials):
+		for i in range(iS):
+			if(sI == initials[i][0]):
+				return True
+		return False
+
+	def searchInitial(self, sI, iS, initials):
+		for i in range(iS):
+			if(sI == initials[i][0]):
+				return initials[i][1]
+
+	def nchancellors(self, N, board, stack, cands, iS, initials, p):
+		solution = 0
+		sI = start = 0
+
+		stack[start] = 1
+
+		while(stack[start] > 0):
+			if(sI == N+1): # soln found
+				solution = solution + 1
+				print("-------------------------------:");
+				print("solution: ", solution)
+
+				sol = []
+				for i in range(1, N+1, 1):
+					print(i, ", ", cands[i][stack[i]])
+					s = []
+					s.append(i)
+					s.append(cands[i][stack[i]])
+					sol.append(s)
+					print(i, " ", cands[i][stack[i]])
+
+				self.board[p]["solutions"].append(sol)
+				
+
+				print("-------------------------------:");
+
+			if(stack[sI] > 0): # get next row
+				if(sI != 0):
+					board[sI][cands[sI][stack[sI]]] = 1
+
+				sI = sI + 1
+				if(self.isInitial(sI, iS, initials) == False):
+					stack[sI] = 0 
+
+					for col in range(N, 0, -1):
+						if(self.canPlace(N+2, board, sI, col) == True):
+							stack[sI] = stack[sI] + 1
+							cands[sI][stack[sI]] = col				
+				else:
+					stack[sI] = 1
+
+					col = self.searchInitial(sI, iS, initials)
+					cands[sI][stack[sI]] = col
+			else: # pop
+				sI = sI - 1;
+				if(self.isInitial(sI, iS, initials) == True):
+					sI = sI - 1
+					board[sI][cands[sI][stack[sI]]] = 0
+					stack[sI] = stack[sI] - 1
+					continue
+				
+				board[sI][cands[sI][stack[sI]]] = 0
+				stack[sI] = stack[sI] - 1
+
+			# print("sI: ", sI); 
+			# self.printBoard(N+2, board);
+			# self.printStack(N+2, stack);
+			# self.printCands(N+2, cands);
+
+
+		if(stack[start] == 0 and solution == 0):
+			print("No solutions");
+			self.board[p]["solutions"].append([]);
+
+	# main function for solving n chancellors based from the uploaded file
+	def solve(self):
+		# 1.solution when the user chooses the "Enter" button
+		# same code as number 2. but dont include "for p in range (self.puzzlenum):" 
+		# since it has only one puzzle which
+		# is entered by the user	
+		# place code here... 
+
+
+		# 2. solution when the user chooses to upload a file
+		# loop through each puzzle indicated in the uploaded file
+		for p in range (self.puzzlenum):
+			N = self.boardSizes[p]   # boardSizes is a list that holds all the sizes for each board
+			board = [[0] * (N+2) for i in range(N+2)]
+			stack = [0] * (N+2)
+			cands = [[0] * (N+2) for i in range(N+2)]
+
+			self.initBoard(N+2, board)
+			self.initStack(N, stack)
+			self.initCands(N+2, board)
+			
+			maxInitials = N*N
+
+			initials = [[0] * (2) for q in range(maxInitials)]
+			iS = 0
+			val = 0
+
+			# get the initial points
+			for x in range(N):
+				for y in range(N):
+					val = self.board[p]['board'][x][y]
+					if(val == 1):
+						initials[iS][0] = x+1   # row of initial (plus 1 because it is not 0-indexing)
+						initials[iS][1] = y+1   # col
+						iS = iS + 1
+
+			if(self.isInitialBoardValid(N+2, board, iS, initials) == False):  # check if the initial board is valid(constraints when placing a chancellor)
+				print("No soln")
+				self.board[p]["solutions"].append([]);
+				continue   # skip, then solve the next puzzle in the file
+
+			self.nchancellors(N, board, stack, cands, iS, initials, p)  # call the nchancellors algo
+
+		for p in range (self.puzzlenum):  # prints the solutions for each puzzle
+			print(self.board[p]["solutions"])
+
+
 if __name__ == "__main__":
 	root=Tk()
 	root.title("N-Chancellors Problem")
 	app = NChancellorsApp(root)
-	root.mainloop()
-
+root.mainloop()
