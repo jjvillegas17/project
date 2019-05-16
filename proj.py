@@ -158,6 +158,7 @@ class NChancellorsApp(Frame):
 
 			# pop the number of puzzles from the list
 			num = int(lst.pop(0)[0])
+
 			self.puzzlenum = num
 			# loop through each board size and board tiles,
 			# pop the size, 
@@ -350,6 +351,7 @@ class NChancellorsApp(Frame):
 			self.board[b]['solutions'].append(lst)
 			self.board[b]['solutions'].append(lst2)
 			self.board[b]['solutions'].append(self.board[b]['board'])
+
 
 	def initBoard(self,N, board):
 		for i in range(N):
