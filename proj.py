@@ -172,7 +172,7 @@ class NChancellorsApp(Frame):
 				board = [lst.pop(0) for i in range(size)]
 				variables = self.initVariables(size)
 				variables = self.setVariables(size, variables, board)
-				self.board.update({i:{'size':size, 'board':board, 'variables':variables, 'solutions':[board]}})
+				self.board.update({i:{'size':size, 'board':board, 'variables':variables, 'solutions': []}})
 				# self.board_sizes.append(size)
 				# self.boards.append(board)
 
@@ -212,7 +212,7 @@ class NChancellorsApp(Frame):
 		# reset board dict
 		self.board = {}
 		# update board dict
-		self.board.update({0:{'size':size, 'board':board, 'variables':variables, 'solutions':[board]}})
+		self.board.update({0:{'size':size, 'board':board, 'variables':variables, 'solutions':[]}})
 
 		# insert list of lists of buttons here
 		self.row[1].pack(fill=X)
@@ -285,17 +285,22 @@ class NChancellorsApp(Frame):
 		# unpack dict values
 		# board = self.board[index_brd]['board']
 		size = self.board[index_brd]['size']
-		solution = self.board[index_brd]['solutions'][index_sol]
-		variables = self.board[index_brd]['variables']
-		variables = self.setVariables(size, variables, solution)
-		for i in range(size):
-			self.row_labels=[]
-			for j in range(size):
-				self.row_labels.append(Button(self.row[3], textvariable=variables[i][j], height=2, width=3, relief=SUNKEN, state=DISABLED))
-				self.row_labels[j].grid(row=i, column=j)
+		solutions = self.board[index_brd]['solutions']
+		if (len(solutions) > 0):
+			solution = self.board[index_brd]['solutions'][index_sol]
+			variables = self.board[index_brd]['variables']
+			variables = self.setVariables(size, variables, solution)
+			for i in range(size):
+				self.row_labels=[]
+				for j in range(size):
+					self.row_labels.append(Button(self.row[3], textvariable=variables[i][j], height=2, width=3, relief=SUNKEN, state=DISABLED))
+					self.row_labels[j].grid(row=i, column=j)
 
-			self.board_labels.append(self.row_labels)
-
+				self.board_labels.append(self.row_labels)
+		else:
+			self.sol_nosol_label = Label(self.row[3], text="No solution")
+			self.sol_nosol_label.pack(fill=X)
+		
 		self.row[4].pack(fill=X)
 
 	# the starting window
